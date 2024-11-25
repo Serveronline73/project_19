@@ -1,3 +1,3 @@
 # project_19
 
-A new Flutter project.
+Projekt 19 Zitat App API
