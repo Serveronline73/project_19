@@ -1,6 +1,6 @@
 name: project_19
 description: "A new Flutter project."
-publish_to: 'none'
+publish_to: "none"
 version: 0.1.0
 
 environment:
@@ -10,6 +10,7 @@ dependencies:
   flutter:
     sdk: flutter
   http: ^1.2.2
+  shared_preferences: ^2.0.13
 
 dev_dependencies:
   flutter_test:
