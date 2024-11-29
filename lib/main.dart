@@ -8,6 +8,8 @@ void main() {
   runApp(const MainApp());
 }
 
+SharedPreferencesAsync prefs = SharedPreferencesAsync();
+
 class MainApp extends StatefulWidget {
   const MainApp({super.key});
 
@@ -16,9 +18,9 @@ class MainApp extends StatefulWidget {
 }
 
 class MyAppState extends State<MainApp> {
-  String quote =
-      "Es ist Unmöglich, auf zwei Hochzeiten gleichzeitig zu Tanzen.";
-  String author = "Dennis Durmus";
+  String quote = "";
+
+  String author = "";
 
   @override
   void initState() {
@@ -27,11 +29,17 @@ class MyAppState extends State<MainApp> {
   }
 
   Future<void> _loadQuote() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      quote = prefs.getString("quote") ?? quote;
-      author = prefs.getString("author") ?? author;
-    });
+    quote = await prefs.getString("quote") ?? "Kein Zitat geladen";
+    author = await prefs.getString("author") ?? "Kein Autor";
+    setState(() {});
+  }
+
+  Future<void> _saveQuote(String quote) async {
+    await prefs.setString("quote", quote);
+  }
+
+  Future<void> _saveAuthor(String author) async {
+    await prefs.setString("author", author);
   }
 
   Future<void> getQuote() async {
@@ -45,17 +53,15 @@ class MyAppState extends State<MainApp> {
     if (response.statusCode == 200) {
       //Status Code 200 = OK
       final data = json.decode(response.body); //JSON Decodieren
-      setState(() {
-        quote = data[0]['quote'];
-        author = data[0]['author'];
-      });
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      prefs.setString("quote", quote);
-      prefs.setString("author", author);
+      quote = data[0]['quote'];
+      author = data[0]['author'];
+      _saveQuote(quote);
+      _saveAuthor(author);
+      setState(() {});
     }
   }
 
-  Future<void> _clearQuote() async {
+  Future<void> clearQuote() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.remove("quote");
     prefs.remove("author");
@@ -116,7 +122,7 @@ class MyAppState extends State<MainApp> {
               ),
               const SizedBox(height: 20.0),
               ElevatedButton(
-                onPressed: _clearQuote,
+                onPressed: clearQuote,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.amber,
                   shape: RoundedRectangleBorder(
